@@ -25,7 +25,7 @@ Copy `.env.example` to `.env.local` and set the project ID. The Appwrite endpoin
 
 ## Current integration scope
 
-The browser SDK module provides Appwrite email/password auth, owner-scoped wedding draft creation/update and image upload. Cashfree integration is implemented in `functions/cashfree-payments/index.js` and deployed as Appwrite Function `cashfree-payments` (Node 22). The function is in sandbox mode, but real sandbox checkout is not ready until the Cashfree credentials and site URL are configured. Public publishing, guest RSVP endpoint, email delivery and admin tooling still need implementation and end-to-end testing.
+The browser SDK provides Appwrite email/password authentication, owner-scoped wedding draft storage, template catalogue reads and wedding image uploads. The Appwrite Function `cashfree-payments` handles server-priced Cashfree order creation, Cashfree status verification, signed webhook updates, payment-gated publishing, public invitation reads and guest RSVP submission. The eight active template catalogue rows are stored in Appwrite. Email delivery, guest event-specific access and admin tooling are not yet implemented. Run the complete sandbox flow with a test account and Cashfree sandbox credentials before production.
 
 ## Cashfree payment setup
 
@@ -46,4 +46,4 @@ In Appwrite Console → Functions → `cashfree-payments` → Variables, configu
 
 Do not share Cashfree secrets in chat or commit them to GitHub. Add them directly in Appwrite Function Variables. Configure the Cashfree dashboard webhook to send payment events to the HTTPS `CASHFREE_NOTIFY_URL`. Keep the Appwrite Function execute access as Any because Cashfree must reach the webhook; user-specific routes enforce Appwrite JWT authentication in the function.
 
-The current frontend uses the Cashfree hosted checkout JavaScript SDK in sandbox mode. No live payment has been attempted. Before production, test successful, failed, cancelled, pending, webhook replay and duplicate notification scenarios in Cashfree sandbox, then configure production credentials and Cashfree's production webhook.
+The frontend loads Cashfree's hosted checkout JavaScript SDK in sandbox mode. The Appwrite Function is deployed, but Cashfree credentials are not configured yet, so checkout cannot create a real sandbox session. No live payment has been attempted. Test successful, failed, cancelled, pending, webhook replay and duplicate notification scenarios in Cashfree sandbox, then configure production credentials and Cashfree's production webhook.
