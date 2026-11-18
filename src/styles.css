@@ -46,8 +46,5 @@ html{font-size:14px}body,body *{font-size:max(14px,1em)}
 @media(min-width:761px) and (max-width:1100px){.topbar{padding:0 4%}.nav-menu{gap:15px}.hero,.section{padding-left:4%;padding-right:4%}.product-image{height:250px}.dashboard-grid{grid-template-columns:1fr 250px}}
 
 
-/* FINAL GLOBAL TYPE FLOOR — deliberately last to override legacy px rules and responsive overrides. */
-html,body{font-size:14px!important}
-body :is(*,::before,::after){font-size:max(14px,1em)!important}
-body :is(input,textarea,select,button)::placeholder{font-size:14px!important}
-body :is(input,textarea,select,button){font-size:max(14px,1em)!important}
+/* 14px baseline; the runtime clamp only raises elements below 14px, preserving larger headings. */
+html,body{font-size:14px}
