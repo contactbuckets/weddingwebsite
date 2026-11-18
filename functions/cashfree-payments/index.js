@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual, randomUUID } from 'node:crypto'
-import { Client, Account, TablesDB, Query, ID, Permission, Role } from 'node-appwrite'
+import { Client, Account, Users, TablesDB, Query, ID, Permission, Role } from 'node-appwrite'
 
 const PROJECT_ID = process.env.APPWRITE_FUNCTION_PROJECT_ID
 const ENDPOINT = process.env.APPWRITE_FUNCTION_API_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1'
@@ -31,6 +31,16 @@ function cashfreeHeaders() {
   const secret = process.env.CASHFREE_CLIENT_SECRET
   if (!id || !secret) throw new Error('Cashfree sandbox credentials are not configured in Appwrite Function variables.')
   return { 'Content-Type': 'application/json', 'x-api-version': CASHFREE_VERSION, 'x-client-id': id, 'x-client-secret': secret }
+}
+function adminClient() {
+  const key = process.env.SHAADISUTRA_APPWRITE_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY
+  if (!key) throw new Error('Appwrite admin API key is unavailable.')
+  return new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(key)
+}
+async function requireAdmin(req) {
+  const user = await authenticatedUser(req)
+  const allowed = String(process.env.SHAADISUTRA_ADMIN_USER_IDS || '').split(',').map(x => x.trim()).filter(Boolean)
+  return user && allowed.includes(user.$id) ? user : null
 }
 function tables() {
   const key = process.env.SHAADISUTRA_APPWRITE_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY
@@ -121,6 +131,41 @@ export default async ({ req, res, log, error }) => {
       return res.json({ success: true, templates: result.rows || result.documents || [] })
     }
 
+    if (path.startsWith('/admin/')) {
+      const admin = await requireAdmin(req)
+      if (!admin) return jsonError(res, 'Administrator access is required.', 403)
+      if (req.method === 'GET' && path === '/admin/dashboard') {
+        const [users, orders, weddings, templates, rsvps] = await Promise.all([
+          new Users(adminClient()).list({ queries: [Query.limit(100)] }),
+          db.listRows({ databaseId: DB_ID, tableId: ORDERS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
+          db.listRows({ databaseId: DB_ID, tableId: PROJECTS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
+          db.listRows({ databaseId: DB_ID, tableId: CATALOG_TABLE, queries: [Query.limit(100)] }),
+          db.listRows({ databaseId: DB_ID, tableId: RSVPS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
+        ])
+        const orderRows = orders.rows || orders.documents || []
+        const weddingRows = weddings.rows || weddings.documents || []
+        return res.json({ success: true, customers: users.users || [], orders: orderRows, weddings: weddingRows, templates: templates.rows || templates.documents || [], rsvps: rsvps.rows || rsvps.documents || [], metrics: { customers: users.total || 0, orders: orderRows.length, revenue: orderRows.filter(x => x.status === 'paid').reduce((sum, x) => sum + Number(x.amount_paise || 0), 0) / 100, weddings: weddingRows.length, rsvps: (rsvps.rows || rsvps.documents || []).length } })
+      }
+      if (req.method === 'POST' && path === '/admin/template') {
+        const data = bodyJson(req)
+        const id = String(data.id || '').toLowerCase()
+        const name = String(data.name || '').trim()
+        const price = Math.round(Number(data.price) * 100)
+        if (!/^[a-z0-9_-]{2,80}$/.test(id) || name.length < 2 || !Number.isSafeInteger(price) || price < 100) return jsonError(res, 'Enter a valid template ID, name and price.')
+        const variables = Array.isArray(data.variables) ? data.variables.slice(0, 60).map(v => ({ key: String(v.key || '').replace(/[^a-zA-Z0-9_]/g, '').slice(0, 60), label: String(v.label || '').slice(0, 100), defaultValue: String(v.defaultValue || '').slice(0, 500) })) : []
+        if (variables.some(v => !v.key) || new Set(variables.map(v => v.key)).size !== variables.length) return jsonError(res, 'Dynamic variable keys must be valid and unique.')
+        for (const key of ['html','css','js']) if (String(data[key] || '').length > 300000) return jsonError(res, 'Each source file must be 300 KB or smaller.')
+        const catalogData = { template_key:id, name, category:String(data.category || 'Hindu').slice(0,60), style:String(data.style || 'Traditional').slice(0,40), price_paise:price, preview_image:String(data.image || '').slice(0,1000), description:String(data.description || '').slice(0,3000), active:true, palette:String(data.palette || '').slice(0,100), accent:String(data.accent || '#a6533c').slice(0,20) }
+        const existing = await db.getRow({ databaseId:DB_ID, tableId:CATALOG_TABLE, rowId:id }).catch(() => null)
+        if (existing) await db.updateRow({ databaseId:DB_ID, tableId:CATALOG_TABLE, rowId:id, data:catalogData })
+        else await db.createRow({ databaseId:DB_ID, tableId:CATALOG_TABLE, rowId:id, data:catalogData, permissions:[Permission.read(Role.any())] })
+        const source = await db.getRow({ databaseId:DB_ID, tableId:'template_sources', rowId:id }).catch(() => null)
+        const sourceData = { template_key:id, file_id:id, file_name:name+'.html', html_source:String(data.html || ''), css_source:String(data.css || ''), js_source:String(data.js || ''), variables_json:JSON.stringify(variables), created_by:admin.$id }
+        if (source) await db.updateRow({ databaseId:DB_ID, tableId:'template_sources', rowId:id, data:sourceData })
+        else await db.createRow({ databaseId:DB_ID, tableId:'template_sources', rowId:id, data:sourceData, permissions:[Permission.read(Role.user(admin.$id)),Permission.update(Role.user(admin.$id))] })
+        return res.json({ success:true, templateId:id })
+      }
+    }
     if (req.method === 'GET' && path === '/public-wedding') {
       const slug = String(req.query?.slug || '')
       if (!slug || slug.length > 100) return jsonError(res, 'A valid invitation link is required.')
