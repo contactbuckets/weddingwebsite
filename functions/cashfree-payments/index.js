@@ -250,6 +250,7 @@ export default async ({ req, res, log, error }) => {
       const catalogRow = await db.getRow({ databaseId: DB_ID, tableId: CATALOG_TABLE, rowId: data.templateId }).catch(() => null)
       const catalog = catalogRow?.data || catalogRow
       if (!catalog || catalog.active !== true || !Number.isSafeInteger(Number(catalog.price_paise)) || Number(catalog.price_paise) < 100) return jsonError(res, 'This wedding template is unavailable for purchase.', 404)
+      if (catalog.is_free === true) return jsonError(res, 'This template is free. Use the free claim flow instead.', 409)
       const template = { name: catalog.name, amount: Number(catalog.price_paise) / 100 }
       const phone = String(data.phone || '').replace(/\D/g, '')
       if (!/^\d{10}$/.test(phone)) return jsonError(res, 'Enter a valid 10-digit mobile number.')
