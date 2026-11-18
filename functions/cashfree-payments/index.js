@@ -37,7 +37,7 @@ function cashfreeHeaders() {
   }
 }
 function adminTables(req) {
-  const key = process.env.APPWRITE_FUNCTION_API_KEY || arguments[0]?.headers?.['x-appwrite-key']
+  const key = process.env.APPWRITE_FUNCTION_API_KEY || req.headers['x-appwrite-key']
   if (!key) throw new Error('Appwrite Function API key is unavailable. Grant rows.read and rows.write scopes.')
   const client = new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(key)
   return new TablesDB(client)
@@ -98,7 +98,8 @@ function verifyWebhookSignature(req, rawBody) {
 export default async ({ req, res, log, error }) => {
   try {
     const path = (req.path || '/').replace(/\/$/, '') || '/'
-    let data = {}\n    try { if (req.bodyText) data = JSON.parse(req.bodyText) } catch { return jsonError(res, 'Invalid JSON request body.') }
+    let data = {}
+    try { if (req.bodyText) data = JSON.parse(req.bodyText) } catch { return jsonError(res, 'Invalid JSON request body.') }
 
     if (req.method === 'GET' && (path === '/health' || path === '/')) {
       return res.json({ service: 'ShaadiSutra Cashfree Payments', ready: Boolean(process.env.CASHFREE_CLIENT_ID && process.env.CASHFREE_CLIENT_SECRET), environment: process.env.CASHFREE_ENV || 'sandbox' })
