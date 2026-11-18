@@ -2,16 +2,10 @@
 
 ## wedding-invite by Suraj Kumar
 
-ShaadiSutra's "Shubh Vivaah" template is adapted from the design and interaction concepts in [thesurajdev/wedding-invite](https://github.com/thesurajdev/wedding-invite).
+ShaadiSutra's **Shubh Vivaah** template uses the original HTML, CSS and JavaScript from [thesurajdev/wedding-invite](https://github.com/thesurajdev/wedding-invite), preserving its temple-door entrance, envelope-to-letter transition, full-screen invitation, ceremony carousel, calendar links, venue map and scroll interactions.
 
 Copyright (c) 2026 Suraj Kumar
 
-The upstream source code is licensed under the MIT License:
+The upstream source-code repository includes an MIT License. The original LICENSE file is retained with the adapted source at `src/templates/shubh-vivaah-LICENSE.txt`. The original demo's photos, names, personal details, music and video are expressly excluded from that license and are not reused. ShaadiSutra uses the couple's own uploaded gallery image and leaves optional video/music empty unless appropriately licensed media is supplied.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-
-The original couple's photos, names, personal details, music and video are not reused. They are not covered by the upstream MIT license.
+ShaadiSutra's integration changes only the wedding JSON config at runtime and adds its RSVP submission form connected to the existing Appwrite backend.
