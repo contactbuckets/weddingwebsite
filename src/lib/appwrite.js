@@ -17,7 +17,9 @@ async function callBackend(path, { method = 'GET', data = {}, authenticated = fa
   const headers = {}
   if (authenticated) {
     const jwt = await account.createJWT({ duration: 900 })
-    headers['x-appwrite-user-jwt'] = jwt.jwt
+    // Appwrite reserves x-appwrite-* headers on function executions.
+    // Use a normal custom header and validate the signed JWT server-side.
+    headers['x-user-jwt'] = jwt.jwt
   }
   const execution = await functions.createExecution({
     functionId: FUNCTION_ID,
@@ -40,12 +42,9 @@ export async function getCurrentUser() {
 }
 
 async function clearCurrentSession() {
-  // Delete the current session directly. Calling account.get() first can race
-  // with Appwrite's session state and leave the browser session active.
   try {
     await account.deleteSession({ sessionId: 'current' })
   } catch (error) {
-    // A missing/expired session is already signed out.
     if (Number(error?.code) !== 401 && error?.type !== 'user_unauthenticated') throw error
   }
 }
@@ -59,8 +58,6 @@ export async function registerAccount({ email, password, name }) {
 
 export async function loginAccount({ email, password }) {
   if (!appwriteConfigured) throw new Error('Appwrite is not configured. Add VITE_APPWRITE_PROJECT_ID.')
-  // Always validate the password with Appwrite. Reusing an existing session
-  // for a matching email would incorrectly accept an arbitrary password.
   await clearCurrentSession()
   return account.createEmailPasswordSession({ email: String(email).trim().toLowerCase(), password })
 }
