@@ -33,7 +33,7 @@ function cashfreeHeaders() {
   return { 'Content-Type': 'application/json', 'x-api-version': CASHFREE_VERSION, 'x-client-id': id, 'x-client-secret': secret }
 }
 function tables() {
-  const key = process.env.APPWRITE_FUNCTION_API_KEY
+  const key = process.env.SHAADISUTRA_APPWRITE_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY
   if (!key) throw new Error('Appwrite Function API key is unavailable. Check rows.read and rows.write scopes.')
   return new TablesDB(new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(key))
 }
@@ -233,7 +233,7 @@ export default async ({ req, res, log, error }) => {
       if (name.length < 2 || !['attending', 'not_attending'].includes(attendance)) return jsonError(res, 'Please enter your name and RSVP response.')
       await db.createRow({
         databaseId: DB_ID, tableId: RSVPS_TABLE, rowId: ID.unique(),
-        data: { project_id: project.$id, guest_name: name, guest_email: String(data.email || '').slice(0, 254), guest_phone: String(data.phone || '').replace(/\D/g, '').slice(0, 24), attendance, guest_count: count, note: String(data.note || '').slice(0, 1000) },
+        data: { project_id: project.$id, guest_name: name, ...(String(data.email || '').trim() ? { guest_email: String(data.email).trim().slice(0, 254) } : {}), guest_phone: String(data.phone || '').replace(/\D/g, '').slice(0, 24), attendance, guest_count: count, note: String(data.note || '').slice(0, 1000) },
         permissions: [],
       })
       return res.json({ success: true, message: 'Thank you! Your RSVP has been received.' })
