@@ -93,10 +93,12 @@ export async function logoutAccount() {
 
 export async function listWeddingTemplates() {
   if (!appwriteConfigured) return []
-  const result = await tablesDB.listRows({ databaseId: DB, tableId: 'template_catalog', queries: [Query.equal('active', true), Query.limit(100)] })
-  return (result.rows || result.documents || []).map(row => {
+  // Use the same server-side catalogue as checkout so prices and free flags stay in sync.
+  const result = await callBackend('/catalog')
+  return (result.templates || []).map(row => {
     const t = row.data || row
-    return { id: t.template_key || row.$id, name: t.name, religion: t.category, style: t.style || 'Traditional', price: Number(t.price_paise || 0) / 100, isFree: t.is_free === true, active: t.active !== false, tags: t.tags || [], palette: t.palette || '', accent: t.accent || '#a6533c', image: t.preview_image || '', desc: t.description || '' }
+    const isFree = t.is_free === true || t.is_free === 1 || String(t.is_free).toLowerCase() === 'true'
+    return { id: t.template_key || row.$id, name: t.name, religion: t.category, style: t.style || 'Traditional', price: isFree ? 0 : Number(t.price_paise || 0) / 100, isFree, active: t.active !== false, tags: t.tags || [], palette: t.palette || '', accent: t.accent || '#a6533c', image: t.preview_image || '', desc: t.description || '' }
   })
 }
 
