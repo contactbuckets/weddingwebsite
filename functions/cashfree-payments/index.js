@@ -127,7 +127,7 @@ export default async ({ req, res, log, error }) => {
       const result = await db.listRows({ databaseId: DB_ID, tableId: PROJECTS_TABLE, queries: [Query.equal('slug', slug), Query.equal('status', 'published'), Query.limit(1)] })
       const project = result.rows?.[0] || result.documents?.[0]
       if (!project) return jsonError(res, 'This wedding invitation is not published or no longer available.', 404)
-      return res.json({ success: true, wedding: JSON.parse(project.wedding_data), templateId: project.template_id, title: project.title })
+      return res.json({ success: true, wedding: JSON.parse(project.wedding_data), templateId: project.template_id, title: project.title, projectId: project.$id })
     }
 
     if (req.method === 'POST' && path === '/webhook') {
