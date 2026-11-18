@@ -10,3 +10,32 @@
 @media(max-width:950px){.topbar{padding:0 4%}.nav-menu{gap:16px}.hero{padding-left:5%;padding-right:5%}.hero h1{font-size:51px}.hero-visual{height:410px}.invite-card{width:50%;min-height:290px}.section{padding:75px 5%}.product-image{height:255px}.feature-copy{padding:65px 8%}.shop-controls{align-items:flex-start;flex-direction:column}.filter-row{width:100%}.search-field{flex:1}.search-field input{width:100%}}
 @media(max-width:650px){.announcement{font-size:7px;letter-spacing:.05em}.topbar{height:68px;padding:0 5%}.logo{font-size:21px}.logo-symbol{width:34px;height:34px}.nav-right{display:none}.hamb{display:block}.nav-menu{display:none;position:absolute;top:68px;left:0;right:0;background:#fbf8f2;padding:20px 7%;border-bottom:1px solid var(--line);flex-direction:column;align-items:flex-start;gap:18px}.nav-menu.show{display:flex}.hero{display:flex;flex-direction:column;align-items:stretch;padding:44px 6% 18px;gap:22px}.hero h1{font-size:47px}.hero-text>p{font-size:11px}.hero-trust{margin-top:27px;font-size:7px}.hero-visual{height:340px;margin:0 0 12px}.hero-photo{inset:0 2% 0 14%}.invite-card{width:48%;min-height:250px;padding:17px 7px}.invite-card h2{font-size:30px}.invite-card>small{font-size:5px}.invite-card p{font-size:5px}.hero-seal{width:65px;height:65px}.hero-side-note{right:-12px;font-size:6px}.hero-bottom{font-size:6px}.ticker{font-size:13px}.section{padding:60px 6%}.section-head{display:block}.section h2,.feature-copy h2{font-size:40px}.section-head>p{margin-top:15px}.featured-grid,.product-grid{grid-template-columns:1fr 1fr;gap:25px 13px;margin-top:28px}.product-image{height:205px}.product-info h3{font-size:17px}.product-info>b{font-size:13px}.product-bottom{font-size:7px}.product-bottom button{font-size:7px;gap:3px}.muted-kicker{font-size:6px}.feature-band{grid-template-columns:1fr}.feature-image{min-height:320px}.feature-copy{padding:50px 8%}.feature-copy h2{font-size:39px}.steps-grid{grid-template-columns:1fr;gap:30px}.faq-section h2{font-size:35px}.faq-row>button{font-size:15px}.newsletter{padding:50px 7%;display:block}.newsletter h2{font-size:35px}.newsletter form{width:100%;margin-top:23px}.footer{padding:38px 7% 20px}.footer-main{grid-template-columns:1fr 1fr;gap:28px}.footer-bottom{flex-wrap:wrap;gap:12px;font-size:6px}.shop-page{padding-top:45px}.shop-title h1{font-size:43px}.shop-stats{gap:15px;flex-wrap:wrap}.shop-stats span{font-size:6px}.religion-tabs{gap:3px}.religion-tabs button{padding:8px 9px;font-size:7px}.filter-row{flex-wrap:wrap}.search-field{flex-basis:100%}.filter-row select{flex:1}.shop-results{font-size:6px}.how-page h1{font-size:45px}.how-cards{grid-template-columns:1fr;gap:12px;margin:35px 0}.how-cards>div{min-height:0;padding:25px}.how-callout{align-items:flex-start;flex-wrap:wrap;padding:22px}.how-callout .btn-primary{width:100%}.builder-page{padding-top:30px}.builder-heading h1{font-size:40px}.builder-layout{grid-template-columns:1fr;gap:15px}.builder-form{padding:18px}.stepper{gap:9px;justify-content:space-between}.stepper button{font-size:7px;gap:4px}.stepper button span{width:20px;height:20px}.builder-side{position:static}.preview-toolbar{display:block}.preview-toolbar h1{font-size:34px}.preview-toolbar>div:last-child{margin-top:15px}.preview-toolbar>div:last-child button{flex:1}.wp-hero{min-height:390px}.wp-story{padding:35px 9%}.dashboard-page{padding-top:45px}.dashboard-page>h1{font-size:42px}.dashboard-grid{grid-template-columns:1fr}.dash-details{flex-wrap:wrap;gap:12px}.template-modal{grid-template-columns:1fr;max-height:90vh;overflow:auto}.template-modal>img{height:210px;min-height:0}.modal-info{padding:25px}.checkout-modal,.account-modal{padding:30px 22px}.modal-info h2{font-size:30px}}
 @media(max-width:380px){.product-image{height:175px}.product-info h3{font-size:15px}.hero h1{font-size:42px}.hero-visual{height:310px}}
+
+/* Individual invitation art directions */
+.wedding-preview{overflow:hidden;position:relative}
+.wedding-preview.theme-gulmohar{background:#fffaf2}
+.wedding-preview.theme-gulmohar .wp-top{background:#f4e9d9;color:#8f4b37}
+.wedding-preview.theme-noor{background:#f7f7ef;color:#394c42}
+.wedding-preview.theme-noor .wp-top{background:#e7ecdf;color:#61745f;letter-spacing:.2em}
+.wedding-preview.theme-noor .wp-hero{filter:saturate(.72)}
+.wedding-preview.theme-noor .wp-hero h2{font-family:'Playfair Display',serif;font-style:italic}
+.wedding-preview.theme-noor .wp-story{background:#eef0e7}
+.wedding-preview.theme-jaipur{background:#fff7ef;color:#532e26}
+.wedding-preview.theme-jaipur .wp-top{background:#f2e2d2;color:#9b623a}
+.wedding-preview.theme-jaipur .wp-hero{min-height:510px}
+.wedding-preview.theme-jaipur .wp-hero h2{font-size:clamp(52px,7vw,86px);text-shadow:0 3px 15px #24140b88}
+.wedding-preview.theme-meenakshi .wp-top{background:#e9eedb;color:#6d673a}
+.wedding-preview.theme-laavan .wp-top{background:#f9e4bf;color:#a64b2e}
+.wedding-preview.theme-satrangi .wp-top{background:#f4e0e8;color:#963d68}
+.wedding-preview.theme-everafter .wp-top{background:#e8edf0;color:#637984}
+.wedding-preview.theme-sunehri .wp-top{background:#282522;color:#d8b87d}
+.wp-gallery{padding:35px 10%;background:#fffdf9}
+.wp-gallery>span{font-size:9px;letter-spacing:.18em;color:var(--accent)}
+.wp-gallery>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:18px}
+.wp-gallery img{width:100%;height:145px;object-fit:cover}
+.upload-note input[type=file]{display:block;margin-top:12px;max-width:100%;font-size:9px}
+.gallery-edit{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.gallery-edit>div{position:relative}
+.gallery-edit img{width:58px;height:65px;object-fit:cover}
+.gallery-edit button{position:absolute;right:-5px;top:-5px;width:20px;height:20px;border:0;border-radius:50%;background:#773e34;color:white;display:grid;place-items:center}
+@media(max-width:650px){.wp-gallery img{height:95px}}
