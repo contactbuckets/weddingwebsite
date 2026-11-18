@@ -41,7 +41,8 @@ export async function saveWeddingProject({ user, wedding, template }) {
     wedding_data: JSON.stringify(wedding),
   }
   if (existingId) {
-    return tablesDB.updateRow({ databaseId: 'shaadisutra', tableId: 'wedding_projects', rowId: existingId, data })
+    const { slug, ...updateData } = data
+    return tablesDB.updateRow({ databaseId: 'shaadisutra', tableId: 'wedding_projects', rowId: existingId, data: updateData })
   }
   const row = await tablesDB.createRow({
     databaseId: 'shaadisutra',
