@@ -44,7 +44,7 @@ function cashfreeHeaders() {
   return { 'Content-Type': 'application/json', 'x-api-version': CASHFREE_VERSION, 'x-client-id': id, 'x-client-secret': secret }
 }
 function adminClient() {
-  const key = process.env.SHAADISUTRA_APPWRITE_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY
+  const key = process.env.APPWRITE_FUNCTION_API_KEY || process.env.SHAADISUTRA_APPWRITE_API_KEY
   if (!key) throw new Error('Appwrite admin API key is unavailable.')
   return new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(key)
 }
