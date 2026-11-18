@@ -39,38 +39,37 @@ export async function getCurrentUser() {
   try { return await account.get() } catch { return null }
 }
 
+async function clearCurrentSession() {
+  try {
+    await account.get()
+    await account.deleteSession({ sessionId: 'current' })
+  } catch (error) {
+    // Only a missing/expired session is safe to treat as signed out.
+    if (Number(error?.code) !== 401 && error?.type !== 'user_unauthenticated') throw error
+  }
+}
+
 export async function registerAccount({ email, password, name }) {
   if (!appwriteConfigured) throw new Error('Appwrite is not configured. Add VITE_APPWRITE_PROJECT_ID.')
-  await account.create({ userId: ID.unique(), email, password, name: name || email.split('@')[0] })
-  return account.createEmailPasswordSession({ email, password })
+  await clearCurrentSession()
+  await account.create({ userId: ID.unique(), email: String(email).trim().toLowerCase(), password, name: name || email.split('@')[0] })
+  return account.createEmailPasswordSession({ email: String(email).trim().toLowerCase(), password })
 }
 
 export async function loginAccount({ email, password }) {
   if (!appwriteConfigured) throw new Error('Appwrite is not configured. Add VITE_APPWRITE_PROJECT_ID.')
-
-  // Appwrite allows only one active session per browser client. Reuse the
-  // current session for the same account, or replace it before switching users.
-  let currentUser = null
-  try {
-    currentUser = await account.get()
-  } catch (error) {
-    // A missing/expired session is expected; network and other errors should
-    // still surface instead of being mistaken for a signed-out browser.
-    if (Number(error?.code) !== 401 && error?.type !== 'user_unauthenticated') throw error
-  }
-
-  if (currentUser) {
-    if (String(currentUser.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()) {
-      return currentUser
-    }
-    await account.deleteSession({ sessionId: 'current' })
-  }
-
-  return account.createEmailPasswordSession({ email, password })
+  // Always validate the password with Appwrite. Reusing an existing session
+  // for a matching email would incorrectly accept an arbitrary password.
+  await clearCurrentSession()
+  return account.createEmailPasswordSession({ email: String(email).trim().toLowerCase(), password })
 }
 
 export async function logoutAccount() {
-  return account.deleteSession({ sessionId: 'current' })
+  try {
+    await account.deleteSession({ sessionId: 'current' })
+  } catch (error) {
+    if (Number(error?.code) !== 401 && error?.type !== 'user_unauthenticated') throw error
+  }
 }
 
 export async function listWeddingTemplates() {
