@@ -96,7 +96,7 @@ export async function listWeddingTemplates() {
   const result = await tablesDB.listRows({ databaseId: DB, tableId: 'template_catalog', queries: [Query.equal('active', true), Query.limit(100)] })
   return (result.rows || result.documents || []).map(row => {
     const t = row.data || row
-    return { id: t.template_key || row.$id, name: t.name, religion: t.category, style: t.style || 'Traditional', price: Number(t.price_paise) / 100, tags: t.tags || [], palette: t.palette || '', accent: t.accent || '#a6533c', image: t.preview_image || '', desc: t.description || '' }
+    return { id: t.template_key || row.$id, name: t.name, religion: t.category, style: t.style || 'Traditional', price: Number(t.price_paise || 0) / 100, isFree: t.is_free === true, active: t.active !== false, tags: t.tags || [], palette: t.palette || '', accent: t.accent || '#a6533c', image: t.preview_image || '', desc: t.description || '' }
   })
 }
 
@@ -129,6 +129,14 @@ export async function listMyOrders(user) {
   if (!user?.$id) return []
   const result = await tablesDB.listRows({ databaseId: DB, tableId: 'orders', queries: [Query.equal('owner_id', user.$id), Query.orderDesc('$createdAt'), Query.limit(20)] })
   return result.rows || result.documents || []
+}
+
+export async function claimFreeTemplate({ templateId, projectId }) {
+  return callBackend('/claim-free', { method: 'POST', authenticated: true, data: { templateId, projectId } })
+}
+
+export async function updateAdminTemplateStatus(data) {
+  return callBackend('/admin/template-status', { method: 'POST', authenticated: true, data })
 }
 
 export async function createCashfreeOrder({ templateId, phone, projectId }) {
