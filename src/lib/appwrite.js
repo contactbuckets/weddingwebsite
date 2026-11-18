@@ -12,24 +12,45 @@ export const tablesDB = new TablesDB(client)
 export const storage = new Storage(client)
 export const functions = new Functions(client)
 
+const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
+function isRateLimit(error) {
+  return Number(error?.code) === 429 || /rate.?limit|too many requests/i.test(String(error?.message || ''))
+}
+async function withRateLimitRetry(operation) {
+  let lastError
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try { return await operation() } catch (error) {
+      lastError = error
+      if (!isRateLimit(error) || attempt === 3) throw error
+      // Appwrite can temporarily reject bursts. Back off instead of firing
+      // repeated requests immediately and making the limit window worse.
+      await wait(1000 * (2 ** attempt))
+    }
+  }
+  throw lastError
+}
+
 async function callBackend(path, { method = 'GET', data = {}, authenticated = false } = {}) {
   if (!appwriteConfigured) throw new Error('Appwrite is not configured. Set VITE_APPWRITE_PROJECT_ID.')
   const headers = {}
   if (authenticated) {
-    const jwt = await account.createJWT({ duration: 900 })
+    const jwt = await withRateLimitRetry(() => account.createJWT({ duration: 900 }))
     // Appwrite reserves x-appwrite-* headers on function executions.
     // Use a normal custom header and validate the signed JWT server-side.
     headers['x-user-jwt'] = jwt.jwt
   }
-  const execution = await functions.createExecution({
+  const execution = await withRateLimitRetry(() => functions.createExecution({
     functionId: FUNCTION_ID,
     body: method === 'GET' ? '' : JSON.stringify(data),
     path,
     method,
     headers,
-  })
+  }))
   let payload = {}
   try { payload = JSON.parse(execution.responseBody || '{}') } catch {}
+  if (execution.responseStatusCode === 429) {
+    throw new Error('Appwrite is temporarily rate-limiting requests. Please wait a few seconds and try again.')
+  }
   if (execution.responseStatusCode < 200 || execution.responseStatusCode >= 300 || payload.success === false) {
     throw new Error(payload.message || `Request failed (${execution.responseStatusCode}).`)
   }
