@@ -63,7 +63,7 @@ function bodyJson(req) {
   try { return JSON.parse(raw) } catch { throw new Error('Invalid JSON request body.') }
 }
 function userClient(req) {
-  const jwt = header(req, 'x-appwrite-user-jwt')
+  const jwt = header(req, 'x-user-jwt')
   if (!jwt) return null
   return new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setJWT(jwt)
 }
