@@ -1,4 +1,4 @@
-name: Build ShaadiSutra and package Appwrite function
+name: Build and deploy ShaadiSutra to GitHub Pages
 on:
   push:
     branches: [main, master]
@@ -10,9 +10,14 @@ concurrency:
   cancel-in-progress: true
 permissions:
   contents: write
+  pages: write
+  id-token: write
 jobs:
   build:
     runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -29,12 +34,12 @@ jobs:
           VITE_CASHFREE_MODE: sandbox
           GITHUB_PAGES: 'true'
         run: npm run build
-      - name: Package Appwrite Cashfree function and Appwrite Site source
+      - name: Package Appwrite function and site source
         if: github.event_name != 'pull_request'
         run: |
           tar -czf functions/cashfree-payments/deployment.tar.gz -C functions/cashfree-payments index.js package.json
           tar --exclude='./.git' --exclude='./node_modules' --exclude='./dist' --exclude='./functions/cashfree-payments/*.tar.gz' -czf functions/cashfree-payments/site-source.tar.gz .
-      - name: Publish function package for Appwrite deployment
+      - name: Publish Appwrite deployment packages
         if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
@@ -45,10 +50,15 @@ jobs:
             git pull --rebase origin main
             git push
           fi
-      - name: Upload production build artifact
+      - name: Configure GitHub Pages
         if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/configure-pages@v5
+      - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: shaadisutra-dist
-          path: dist/
-          retention-days: 14
+          path: dist
+      - name: Deploy to GitHub Pages
+        if: github.event_name != 'pull_request'
+        id: deployment
+        uses: actions/deploy-pages@v4
