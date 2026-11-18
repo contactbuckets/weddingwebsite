@@ -111,7 +111,7 @@ export default async ({ req, res, log, error }) => {
         service: 'ShaadiSutra Cashfree Payments',
         ready: Boolean(process.env.CASHFREE_CLIENT_ID && process.env.CASHFREE_CLIENT_SECRET && process.env.SHAADISUTRA_SITE_URL),
         environment: process.env.CASHFREE_ENV || 'sandbox',
-        appwriteReady: Boolean(process.env.APPWRITE_FUNCTION_API_KEY),
+        appwriteReady: Boolean(process.env.SHAADISUTRA_APPWRITE_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY),
         siteConfigured: Boolean(process.env.SHAADISUTRA_SITE_URL),
       })
     }
@@ -146,11 +146,15 @@ export default async ({ req, res, log, error }) => {
       const user = await authenticatedUser(req)
       if (!user) return jsonError(res, 'Please sign in to continue.', 401)
       const data = bodyJson(req)
-      const template = CATALOG[data.templateId]
-      if (!template) return jsonError(res, 'Please select a valid wedding template.')
+      if (!/^[a-z0-9_-]{2,80}$/.test(String(data.templateId || ''))) return jsonError(res, 'Please select a valid wedding template.')
+      const catalogRow = await db.getRow({ databaseId: DB_ID, tableId: CATALOG_TABLE, rowId: data.templateId }).catch(() => null)
+      const catalog = catalogRow?.data || catalogRow
+      if (!catalog || catalog.active !== true || !Number.isSafeInteger(Number(catalog.price_paise)) || Number(catalog.price_paise) < 100) return jsonError(res, 'This wedding template is unavailable for purchase.', 404)
+      const template = { name: catalog.name, amount: Number(catalog.price_paise) / 100 }
       const phone = String(data.phone || '').replace(/\D/g, '')
       if (!/^\d{10}$/.test(phone)) return jsonError(res, 'Enter a valid 10-digit mobile number.')
-      if (!user.email) return jsonError(res, 'Your account needs a verified email address before checkout.')
+      if (!user.email) return jsonError(res, 'Your account needs an email address before checkout.')
+      if (!Number.isInteger(template.amount * 100) || template.amount * 100 > 100000000) return jsonError(res, 'This template price is not configured correctly.', 503)
       const siteUrl = process.env.SHAADISUTRA_SITE_URL
       if (!siteUrl) return jsonError(res, 'ShaadiSutra website URL is not configured yet.', 503)
       const projectId = String(data.projectId || '')
