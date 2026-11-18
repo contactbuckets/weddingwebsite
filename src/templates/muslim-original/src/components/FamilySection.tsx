@@ -35,7 +35,7 @@ export function FamilySection() {
                   <span>{bride.title}</span>
                 </div>
                 <span className="text-xs font-serif text-[#B58B35] tracking-widest uppercase font-semibold">
-                  Ballari
+                  {weddingData.locationSummary}
                 </span>
               </div>
 
@@ -95,7 +95,7 @@ export function FamilySection() {
                   <span>{groom.title}</span>
                 </div>
                 <span className="text-xs font-serif text-[#B58B35] tracking-widest uppercase font-semibold">
-                  Ballari
+                  {weddingData.locationSummary}
                 </span>
               </div>
 

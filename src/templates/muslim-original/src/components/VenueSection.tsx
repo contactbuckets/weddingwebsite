@@ -26,7 +26,7 @@ export function VenueSection() {
             Venues &amp; Directions
           </h2>
           <p className="font-serif italic text-sm sm:text-base text-[#5E5A4F]">
-            Easily locate both ceremonial venues in Ballari, Karnataka. Click below to open directions in Google Maps.
+            Easily locate both ceremonial venues in {weddingData.locationSummary}. Click below to open directions in Google Maps.
           </p>
           <OrnamentalDivider variant="gold" symbol="floral" className="mt-4" />
         </div>

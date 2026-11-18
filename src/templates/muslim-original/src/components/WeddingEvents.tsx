@@ -26,13 +26,13 @@ export function WeddingEvents() {
   const createGoogleCalendarLink = (event: (typeof weddingData.events)[0]) => {
     // Nikah: 2026-10-18T12:30:00+05:30 -> UTC: 20261018T070000Z
     // Valima: 2026-10-19T13:30:00+05:30 -> UTC: 20261019T080000Z
-    const dates =
-      event.id === "nikah"
-        ? "20261018T070000Z/20261018T110000Z"
-        : "20261019T080000Z/20261019T120000Z";
+    const start = new Date(`${event.dateISO}T${event.time || "18:00"}:00+05:30`);
+    const end = new Date(start.getTime() + 3 * 60 * 60 * 1000);
+    const toCalendar = (date: Date) => date.toISOString().replace(/[-:]/g, "").replace(/\\.000Z$/, "Z");
+    const dates = `${toCalendar(start)}/${toCalendar(end)}`;
 
     const title = encodeURIComponent(
-      `${event.name} — Madeeha Nikhat & Mohammed Ameenuddin Ashrafi`
+      `${event.name} — ${weddingData.bride.fullName} & ${weddingData.groom.fullName}`
     );
     const details = encodeURIComponent(
       `${event.name}\nDate: ${event.date}\nTime: ${event.time}\n${
