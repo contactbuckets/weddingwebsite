@@ -1,4 +1,4 @@
-import { Account, Client, ID, Permission, Role, Storage, TablesDB } from 'appwrite'
+import { Account, Client, ID, Permission, Query, Role, Storage, TablesDB } from 'appwrite'
 
 const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1'
 const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID
@@ -70,4 +70,16 @@ export async function uploadWeddingImage(file, user) {
     permissions: [Permission.read(Role.any()), Permission.update(Role.user(user.$id)), Permission.delete(Role.user(user.$id))],
   })
   return { fileId: uploaded.$id, url: storage.getFileView({ bucketId: 'wedding-media', fileId: uploaded.$id }).toString() }
+}
+
+export async function loadWeddingProject(user) {
+  if (!user?.$id) return null
+  const result = await tablesDB.listRows({
+    databaseId: 'shaadisutra',
+    tableId: 'wedding_projects',
+    queries: [Query.equal('owner_id', user.$id), Query.orderDesc('$updatedAt'), Query.limit(1)],
+  })
+  const row = result.rows?.[0] || result.documents?.[0] || null
+  if (row?.$id) localStorage.setItem('ss-cloud-project-id', row.$id)
+  return row
 }
