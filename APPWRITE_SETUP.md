@@ -5,6 +5,8 @@ ShaadiSutra uses its own Appwrite project. Do not point this app at the Bucket I
 ## Existing Appwrite resources
 
 - Project: `Weddingwebsite`
+- Appwrite Site: `shaadisutra-web` (Vite, Node 22, static SPA fallback)
+- Generated site URL: `https://shaadisutra-web.appwrite.network`
 - Project ID: `6afdb35c0036c36ebf2e`
 - Region: Singapore (`sgp`)
 - Database: `shaadisutra`
@@ -25,7 +27,7 @@ Copy `.env.example` to `.env.local` and set the project ID. The Appwrite endpoin
 
 ## Current integration scope
 
-The browser SDK provides Appwrite email/password authentication, owner-scoped wedding draft storage, template catalogue reads and wedding image uploads. The Appwrite Function `cashfree-payments` handles server-priced Cashfree order creation, Cashfree status verification, signed webhook updates, payment-gated publishing, public invitation reads and guest RSVP submission. The eight active template catalogue rows are stored in Appwrite. Email delivery, guest event-specific access and admin tooling are not yet implemented. Run the complete sandbox flow with a test account and Cashfree sandbox credentials before production.
+The browser SDK provides Appwrite email/password authentication, owner-scoped wedding draft storage, template catalogue reads and wedding image uploads. The Appwrite Site `shaadisutra-web` hosts the Vite static SPA with an `index.html` fallback. The Appwrite Function `cashfree-payments` handles server-priced Cashfree order creation, Cashfree status verification, signed webhook updates, payment-gated publishing, public invitation reads, guest RSVP submission and owner-authenticated RSVP listing. The eight active template catalogue rows are stored in Appwrite. Email delivery, guest event-specific access and admin tooling are not yet implemented. Run the complete sandbox flow with a test account and Cashfree sandbox credentials before production.
 
 ## Cashfree payment setup
 
@@ -46,4 +48,4 @@ In Appwrite Console → Functions → `cashfree-payments` → Variables, configu
 
 Do not share Cashfree secrets in chat or commit them to GitHub. Add them directly in Appwrite Function Variables. Configure the Cashfree dashboard webhook to send payment events to the HTTPS `CASHFREE_NOTIFY_URL`. Keep the Appwrite Function execute access as Any because Cashfree must reach the webhook; user-specific routes enforce Appwrite JWT authentication in the function.
 
-The frontend loads Cashfree's hosted checkout JavaScript SDK in sandbox mode. The Appwrite Function is deployed, but Cashfree credentials are not configured yet, so checkout cannot create a real sandbox session. No live payment has been attempted. Test successful, failed, cancelled, pending, webhook replay and duplicate notification scenarios in Cashfree sandbox, then configure production credentials and Cashfree's production webhook.
+The frontend loads Cashfree's hosted checkout JavaScript SDK in sandbox mode. The Appwrite Site is deployed and the payment Function is live, but Cashfree credentials are not configured yet, so checkout cannot create a real sandbox session. No live payment has been attempted. Test successful, failed, cancelled, pending, webhook replay and duplicate notification scenarios in Cashfree sandbox, then configure production credentials and Cashfree's production webhook.
