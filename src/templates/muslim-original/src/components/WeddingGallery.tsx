@@ -6,7 +6,7 @@ import { galleryItems, GalleryItem } from "@/data/wedding";
 import { OrnamentalDivider } from "./OrnamentalDivider";
 import { ZoomIn, X, ChevronLeft, ChevronRight, Eye } from "lucide-react";
 
-export function WeddingGallery() {
+export function WeddingGallery() {\n  if (galleryItems.length === 0) return null;
   const [selectedItemIndex, setSelectedItemIndex] = useState<number | null>(
     null
   );

@@ -61,7 +61,7 @@ export function ClosingSection({ onReplayIntro }: ClosingSectionProps) {
             {weddingData.bride.fullName} &amp; {weddingData.groom.fullName}
           </h3>
           <p className="font-serif text-xs uppercase tracking-widest text-[#9DA78B] mt-1">
-            {weddingData.dateSummary} · Ballari, Karnataka
+            {weddingData.dateSummary} · {weddingData.locationSummary}
           </p>
         </div>
 

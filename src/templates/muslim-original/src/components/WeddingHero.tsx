@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "./Image.jsx";
-import { weddingData } from "@/data/wedding";
+import { weddingData, galleryItems } from "@/data/wedding";
 import { OrnamentalDivider } from "./OrnamentalDivider";
 import { Calendar, MapPin, Sparkles, ChevronDown, Play } from "lucide-react";
 
@@ -73,8 +73,8 @@ export function WeddingHero({ onOpenVideo }: WeddingHeroProps) {
           <div className="relative rounded-3xl p-2 sm:p-3 bg-gradient-to-b from-[#E5C365]/30 via-[#B58B35]/20 to-[#243A2D]/10 shadow-2xl">
             <div className="relative rounded-2xl overflow-hidden border border-[#B58B35]/50 bg-white aspect-[3/2] shadow-inner">
               <Image
-                src="https://raw.githubusercontent.com/karthikrshet/wedding-invitation/main/public/images/wedding-artwork.png"
-                alt="Madeeha Nikhat & Mohammed Ameenuddin Ashrafi Illustrated Wedding Artwork"
+                src={galleryItems[0]?.src || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85"}
+                alt={`${weddingData.bride.fullName} & ${weddingData.groom.fullName} wedding artwork`}
                 fill
                 priority
                 sizes="(max-width: 640px) 90vw, (max-width: 1024px) 500px, 600px"
@@ -83,7 +83,7 @@ export function WeddingHero({ onOpenVideo }: WeddingHeroProps) {
             </div>
             {/* Fine Caption Tag */}
             <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-[#243A2D] text-[#E5C365] border border-[#B58B35] shadow-md text-[11px] font-serif uppercase tracking-widest whitespace-nowrap">
-              Celebration of Love · SBT Family
+              A Celebration of Love
             </div>
           </div>
         </div>
