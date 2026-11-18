@@ -130,3 +130,7 @@ export async function listWeddingRsvps(projectId) {
   const result = await callBackend(`/my-rsvps?projectId=${encodeURIComponent(projectId)}`, { authenticated: true })
   return result.rsvps || []
 }
+
+export async function adminRequest(path, { method = 'GET', data = {} } = {}) {
+  return callBackend(path, { method, data, authenticated: true })
+}
