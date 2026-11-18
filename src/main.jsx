@@ -7,7 +7,7 @@ import './styles.css'
 
 // Keep the admin studio isolated from the storefront application. This avoids
 // unrelated storefront state/effects from preventing the admin screen mounting.
-const isAdminRoute = window.location.pathname.replace(/\\/+$/, '').endsWith('/admin')
+const isAdminRoute = window.location.pathname.replace(/\/+$/, '').endsWith('/admin')
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
