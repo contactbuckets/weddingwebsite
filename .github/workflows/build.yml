@@ -30,7 +30,7 @@ jobs:
         if: github.event_name != 'pull_request'
         run: |
           tar -czf functions/cashfree-payments/deployment.tar.gz -C functions/cashfree-payments index.js package.json
-          git archive --format=tar HEAD | gzip > functions/cashfree-payments/site-source.tar.gz
+          tar --exclude='./.git' --exclude='./node_modules' --exclude='./dist' --exclude='./functions/cashfree-payments/*.tar.gz' -czf functions/cashfree-payments/site-source.tar.gz .
       - name: Publish function package for Appwrite deployment
         if: github.event_name != 'pull_request'
         run: |
