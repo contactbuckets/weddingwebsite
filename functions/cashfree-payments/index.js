@@ -147,7 +147,7 @@ export default async ({ req, res, log, error }) => {
       if (!admin) return jsonError(res, 'Administrator access is required.', 403)
       if (req.method === 'GET' && path === '/admin/dashboard') {
         const [users, orders, weddings, rsvps] = await Promise.all([
-          new Users(adminClient()).list({ queries: [Query.limit(100)] }),
+          new Users(adminClient()).list({ queries: [Query.limit(100)] }).catch((err) => { log('Customer list unavailable; continuing admin dashboard without customer directory: ' + (err?.message || String(err))); return { users: [], total: 0 } }),
           db.listRows({ databaseId: DB_ID, tableId: ORDERS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
           db.listRows({ databaseId: DB_ID, tableId: PROJECTS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
           db.listRows({ databaseId: DB_ID, tableId: RSVPS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
