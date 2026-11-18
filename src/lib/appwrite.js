@@ -47,6 +47,25 @@ export async function registerAccount({ email, password, name }) {
 
 export async function loginAccount({ email, password }) {
   if (!appwriteConfigured) throw new Error('Appwrite is not configured. Add VITE_APPWRITE_PROJECT_ID.')
+
+  // Appwrite allows only one active session per browser client. Reuse the
+  // current session for the same account, or replace it before switching users.
+  let currentUser = null
+  try {
+    currentUser = await account.get()
+  } catch (error) {
+    // A missing/expired session is expected; network and other errors should
+    // still surface instead of being mistaken for a signed-out browser.
+    if (Number(error?.code) !== 401 && error?.type !== 'user_unauthenticated') throw error
+  }
+
+  if (currentUser) {
+    if (String(currentUser.email || '').trim().toLowerCase() === String(email || '').trim().toLowerCase()) {
+      return currentUser
+    }
+    await account.deleteSession({ sessionId: 'current' })
+  }
+
   return account.createEmailPasswordSession({ email, password })
 }
 
