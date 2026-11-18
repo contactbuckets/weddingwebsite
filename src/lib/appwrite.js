@@ -1,4 +1,4 @@
-import { Account, Client, ID, Permission, Query, Role, Storage, TablesDB } from 'appwrite'
+import { Account, Client, Functions, ID, Permission, Query, Role, Storage, TablesDB } from 'appwrite'
 
 const endpoint = import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1'
 const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID
@@ -8,6 +8,7 @@ const client = new Client().setEndpoint(endpoint).setProject(projectId || 'missi
 export const account = new Account(client)
 export const tablesDB = new TablesDB(client)
 export const storage = new Storage(client)
+export const functions = new Functions(client)
 
 export async function getCurrentUser() {
   if (!appwriteConfigured) return null
@@ -82,4 +83,39 @@ export async function loadWeddingProject(user) {
   const row = result.rows?.[0] || result.documents?.[0] || null
   if (row?.$id) localStorage.setItem('ss-cloud-project-id', row.$id)
   return row
+}
+
+export async function createCashfreeOrder({ templateId, phone }) {
+  const jwt = await account.createJWT({ duration: 900 })
+  const execution = await functions.createExecution({
+    functionId: 'cashfree-payments',
+    body: JSON.stringify({ templateId, phone }),
+    path: '/create-order',
+    method: 'POST',
+    headers: { 'x-appwrite-user-jwt': jwt.jwt },
+  })
+  if (execution.responseStatusCode < 200 || execution.responseStatusCode >= 300) {
+    let payload = {}
+    try { payload = JSON.parse(execution.responseBody || '{}') } catch {}
+    throw new Error(payload.message || 'Could not start Cashfree checkout.')
+  }
+  const payload = JSON.parse(execution.responseBody || '{}')
+  if (!payload.success || !payload.paymentSessionId) throw new Error(payload.message || 'Cashfree did not return a payment session.')
+  return payload
+}
+
+export async function verifyCashfreePayment(orderId) {
+  const jwt = await account.createJWT({ duration: 900 })
+  const execution = await functions.createExecution({
+    functionId: 'cashfree-payments',
+    body: JSON.stringify({ orderId }),
+    path: '/verify',
+    method: 'POST',
+    headers: { 'x-appwrite-user-jwt': jwt.jwt },
+  })
+  const payload = JSON.parse(execution.responseBody || '{}')
+  if (execution.responseStatusCode < 200 || execution.responseStatusCode >= 300 || !payload.success) {
+    throw new Error(payload.message || 'Could not verify payment status.')
+  }
+  return payload
 }
