@@ -226,6 +226,16 @@ export default async ({ req, res, log, error }) => {
       return res.json({ success: true, slug: updated.slug, url: `${process.env.SHAADISUTRA_SITE_URL}/?invite=${encodeURIComponent(updated.slug)}` })
     }
 
+    if (req.method === 'GET' && path === '/my-rsvps') {
+      const user = await authenticatedUser(req)
+      if (!user) return jsonError(res, 'Please sign in to view your guest RSVPs.', 401)
+      const projectId = String(req.query?.projectId || '')
+      const project = await findProject(db, projectId)
+      if (!project || project.owner_id !== user.$id) return jsonError(res, 'Wedding project not found.', 404)
+      const result = await db.listRows({ databaseId: DB_ID, tableId: RSVPS_TABLE, queries: [Query.equal('project_id', project.$id), Query.orderDesc('$createdAt'), Query.limit(100)] })
+      return res.json({ success: true, rsvps: result.rows || result.documents || [] })
+    }
+
     if (req.method === 'POST' && path === '/rsvp') {
       const data = bodyJson(req)
       const projectId = String(data.projectId || '')
