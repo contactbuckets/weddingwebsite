@@ -51,3 +51,34 @@ html,body{font-size:14px}
 
 /* Template demo actions */
 .product-bottom{gap:12px;flex-wrap:wrap}.product-actions{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}.product-actions button{white-space:nowrap}.product-actions .demo-link{display:inline-flex;align-items:center;gap:6px;color:#755d4c}.product-actions .demo-link:hover{color:var(--rust)}.demo-page .preview-toolbar{align-items:flex-end;gap:24px}.demo-intro{font-size:14px;color:#827164;margin:8px 0 0;line-height:1.7}.demo-toolbar-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.demo-page .preview-shell{margin-top:28px}@media(max-width:640px){.product-bottom{align-items:flex-start;flex-direction:column}.product-actions{width:100%;justify-content:space-between}.demo-page .preview-toolbar{align-items:flex-start;flex-direction:column}.demo-toolbar-actions{width:100%;justify-content:flex-start}.demo-toolbar-actions button{flex:1}}
+
+
+/* Standalone guest-facing wedding website: no studio header, footer or framed preview. */
+.public-invite-app{min-height:100vh;width:100%;margin:0;background:#fffaf1;color:#53392d}
+.public-invite-main{width:100%;min-height:100vh}
+.public-invite-page{width:100%;max-width:none;margin:0;padding:0;background:#fffaf1}
+.public-invite-design{width:100%;max-width:none;margin:0;background:transparent}
+.public-invite-design>.wedding-preview{width:100%;max-width:none;border:0;box-shadow:none}
+.public-invite-design .wp-top{padding:26px 16px}
+.public-invite-design .wp-hero{min-height:min(100svh,980px);padding:64px 20px;background-position:center}
+.public-invite-design .wp-story,.public-invite-design .wp-events,.public-invite-design .wp-gallery{padding:clamp(48px,8vw,100px) max(7vw,22px)}
+.public-invite-design .wp-story p{max-width:760px;margin:24px auto}
+.public-invite-design .wp-event{max-width:760px;margin:0 auto;padding:24px}
+.public-invite-design .wp-gallery>div{max-width:1100px;margin:25px auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.public-invite-design .wp-gallery img{width:100%;height:clamp(170px,24vw,300px);object-fit:cover}
+.public-rsvp-card{width:min(680px,calc(100% - 36px));max-width:680px!important;margin:54px auto!important;padding:clamp(24px,5vw,48px)!important;background:#fffdf9;border:1px solid #e9dfd2}
+.public-rsvp-card h2{text-align:center;font:clamp(30px,4vw,42px) 'Playfair Display',serif;color:#3b2a22;margin:18px 0 8px}
+.public-rsvp-card>p{text-align:center;color:#817165;font-size:14px;margin-bottom:26px}
+.public-rsvp-card form{display:grid;grid-template-columns:1fr 1fr;gap:15px 18px}
+.public-rsvp-card form label{display:flex;flex-direction:column;gap:7px;color:#806e60;font-size:13px}
+.public-rsvp-card form input,.public-rsvp-card form select,.public-rsvp-card form textarea{width:100%;min-height:44px;border:1px solid #e2d7ca;background:#fffdfa;padding:11px 12px;color:#45352c;font:14px 'DM Sans',sans-serif}
+.public-rsvp-card form textarea{min-height:90px;resize:vertical}
+.public-rsvp-card form label:last-of-type,.public-rsvp-card form button{grid-column:1/-1}
+.public-invite-footer{text-align:center;padding:24px 12px 34px;color:#a08b78;font:11px 'DM Sans',sans-serif;letter-spacing:.18em}
+.public-invite-loading,.public-invite-error{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;background:linear-gradient(145deg,#fbf4e8,#f2e1d0);color:#76503c;font:16px 'DM Sans',sans-serif}
+.public-invite-spinner{width:30px;height:30px;border:2px solid #d9c7b5;border-top-color:#a6533c;border-radius:50%;animation:public-invite-spin .8s linear infinite;margin-bottom:18px}
+@keyframes public-invite-spin{to{transform:rotate(360deg)}}
+.public-invite-error>span{font-size:38px;color:#a6533c}.public-invite-error h1{font:36px 'Playfair Display',serif}.public-invite-error a{color:#a6533c}
+.public-invite-app .vy-site{width:100%;min-height:100svh}
+.public-invite-app .vy-entry-screen{min-height:100svh;width:100%}
+@media(max-width:650px){.public-rsvp-card form{grid-template-columns:1fr}.public-rsvp-card form label,.public-rsvp-card form button{grid-column:1}.public-invite-design .wp-hero{min-height:85svh}.public-invite-design .wp-gallery>div{grid-template-columns:repeat(2,minmax(0,1fr))}}
