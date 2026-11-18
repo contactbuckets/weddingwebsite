@@ -43,20 +43,23 @@ function cashfreeHeaders() {
   if (!id || !secret) throw new Error('Cashfree sandbox credentials are not configured in Appwrite Function variables.')
   return { 'Content-Type': 'application/json', 'x-api-version': CASHFREE_VERSION, 'x-client-id': id, 'x-client-secret': secret }
 }
-function adminClient() {
-  const key = process.env.APPWRITE_FUNCTION_API_KEY || process.env.SHAADISUTRA_APPWRITE_API_KEY
-  if (!key) throw new Error('Appwrite admin API key is unavailable.')
-  return new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(key)
+function functionApiKey(req) {
+  // Appwrite Cloud injects the ephemeral function key in the request header at runtime.
+  // APPWRITE_FUNCTION_API_KEY is only available during the build phase.
+  const key = header(req, 'x-appwrite-key') || process.env.SHAADISUTRA_APPWRITE_API_KEY
+  if (!key) throw new Error('Appwrite Function API key is unavailable. Check function scopes and runtime key header.')
+  return key
+}
+function adminClient(req) {
+  return new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(functionApiKey(req))
 }
 async function requireAdmin(req) {
   const user = await authenticatedUser(req)
   const allowed = String(process.env.SHAADISUTRA_ADMIN_USER_IDS || '').split(',').map(x => x.trim()).filter(Boolean)
   return user && allowed.includes(user.$id) ? user : null
 }
-function tables() {
-  const key = process.env.SHAADISUTRA_APPWRITE_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY
-  if (!key) throw new Error('Appwrite Function API key is unavailable. Check rows.read and rows.write scopes.')
-  return new TablesDB(new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(key))
+function tables(req) {
+  return new TablesDB(new Client().setEndpoint(ENDPOINT).setProject(PROJECT_ID).setKey(functionApiKey(req)))
 }
 function header(req, name) {
   const headers = req.headers || {}
@@ -125,7 +128,7 @@ function validWebhook(req) {
 export default async ({ req, res, log, error }) => {
   try {
     const path = (req.path || '/').replace(/\/$/, '') || '/'
-    const db = tables()
+    const db = tables(req)
 
     if (req.method === 'GET' && (path === '/health' || path === '/')) {
       return res.json({
@@ -147,7 +150,7 @@ export default async ({ req, res, log, error }) => {
       if (!admin) return jsonError(res, 'Administrator access is required.', 403)
       if (req.method === 'GET' && path === '/admin/dashboard') {
         const [users, orders, weddings, rsvps] = await Promise.all([
-          new Users(adminClient()).list({ queries: [Query.limit(100)] }).catch((err) => { log('Customer list unavailable; continuing admin dashboard without customer directory: ' + (err?.message || String(err))); return { users: [], total: 0 } }),
+          new Users(adminClient(req)).list({ queries: [Query.limit(100)] }).catch((err) => { log('Customer list unavailable; continuing admin dashboard without customer directory: ' + (err?.message || String(err))); return { users: [], total: 0 } }),
           db.listRows({ databaseId: DB_ID, tableId: ORDERS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
           db.listRows({ databaseId: DB_ID, tableId: PROJECTS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
           db.listRows({ databaseId: DB_ID, tableId: RSVPS_TABLE, queries: [Query.orderDesc('$createdAt'), Query.limit(100)] }),
