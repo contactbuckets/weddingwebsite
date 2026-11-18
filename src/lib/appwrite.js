@@ -40,11 +40,12 @@ export async function getCurrentUser() {
 }
 
 async function clearCurrentSession() {
+  // Delete the current session directly. Calling account.get() first can race
+  // with Appwrite's session state and leave the browser session active.
   try {
-    await account.get()
     await account.deleteSession({ sessionId: 'current' })
   } catch (error) {
-    // Only a missing/expired session is safe to treat as signed out.
+    // A missing/expired session is already signed out.
     if (Number(error?.code) !== 401 && error?.type !== 'user_unauthenticated') throw error
   }
 }
