@@ -48,3 +48,6 @@ html{font-size:14px}body,body *{font-size:max(14px,1em)}
 
 /* 14px baseline; the runtime clamp only raises elements below 14px, preserving larger headings. */
 html,body{font-size:14px}
+
+/* Template demo actions */
+.product-bottom{gap:12px;flex-wrap:wrap}.product-actions{display:flex;align-items:center;justify-content:flex-end;gap:14px;flex-wrap:wrap}.product-actions button{white-space:nowrap}.product-actions .demo-link{display:inline-flex;align-items:center;gap:6px;color:#755d4c}.product-actions .demo-link:hover{color:var(--rust)}.demo-page .preview-toolbar{align-items:flex-end;gap:24px}.demo-intro{font-size:14px;color:#827164;margin:8px 0 0;line-height:1.7}.demo-toolbar-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.demo-page .preview-shell{margin-top:28px}@media(max-width:640px){.product-bottom{align-items:flex-start;flex-direction:column}.product-actions{width:100%;justify-content:space-between}.demo-page .preview-toolbar{align-items:flex-start;flex-direction:column}.demo-toolbar-actions{width:100%;justify-content:flex-start}.demo-toolbar-actions button{flex:1}}
