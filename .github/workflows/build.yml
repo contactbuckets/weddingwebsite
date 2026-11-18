@@ -26,15 +26,17 @@ jobs:
           VITE_CASHFREE_MODE: sandbox
           GITHUB_PAGES: 'true'
         run: npm run build
-      - name: Package Appwrite Cashfree function
+      - name: Package Appwrite Cashfree function and Appwrite Site source
         if: github.event_name != 'pull_request'
-        run: tar -czf functions/cashfree-payments/deployment.tar.gz -C functions/cashfree-payments index.js package.json
+        run: |
+          tar -czf functions/cashfree-payments/deployment.tar.gz -C functions/cashfree-payments index.js package.json
+          git archive --format=tar HEAD | gzip > functions/cashfree-payments/site-source.tar.gz
       - name: Publish function package for Appwrite deployment
         if: github.event_name != 'pull_request'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add functions/cashfree-payments/deployment.tar.gz
+          git add functions/cashfree-payments/deployment.tar.gz functions/cashfree-payments/site-source.tar.gz
           if ! git diff --cached --quiet; then
             git commit -m "chore: package Cashfree Appwrite function"
             git push
