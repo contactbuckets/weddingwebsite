@@ -124,3 +124,9 @@ export async function uploadWeddingImage(file, user) {
   })
   return { fileId: uploaded.$id, url: storage.getFileView({ bucketId: 'wedding-media', fileId: uploaded.$id }).toString() }
 }
+
+export async function listWeddingRsvps(projectId) {
+  if (!projectId) return []
+  const result = await callBackend(`/my-rsvps?projectId=${encodeURIComponent(projectId)}`, { authenticated: true })
+  return result.rsvps || []
+}
