@@ -22,7 +22,7 @@ async function callBackend(path, { method = 'GET', data = {}, authenticated = fa
   const execution = await functions.createExecution({
     functionId: FUNCTION_ID,
     body: method === 'GET' ? '' : JSON.stringify(data),
-    path,
+    xpath: path,
     method,
     headers,
   })
