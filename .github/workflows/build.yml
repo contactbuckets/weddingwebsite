@@ -5,6 +5,9 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+concurrency:
+  group: shaadisutra-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -39,6 +42,7 @@ jobs:
           git add functions/cashfree-payments/deployment.tar.gz functions/cashfree-payments/site-source.tar.gz
           if ! git diff --cached --quiet; then
             git commit -m "chore: package Cashfree Appwrite function"
+            git pull --rebase origin main
             git push
           fi
       - name: Upload production build artifact
