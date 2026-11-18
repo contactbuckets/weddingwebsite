@@ -34,22 +34,6 @@ jobs:
         run: |
           mkdir -p dist/admin
           cp dist/index.html dist/admin/index.html
-      - name: Package Appwrite function and site source
-        if: github.event_name != 'pull_request'
-        run: |
-          tar -czf functions/cashfree-payments/deployment.tar.gz -C functions/cashfree-payments index.js package.json
-          tar --exclude='./.git' --exclude='./node_modules' --exclude='./dist' --exclude='./functions/cashfree-payments/*.tar.gz' -czf functions/cashfree-payments/site-source.tar.gz .
-      - name: Publish Appwrite deployment packages
-        if: github.event_name != 'pull_request'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add functions/cashfree-payments/deployment.tar.gz functions/cashfree-payments/site-source.tar.gz
-          if ! git diff --cached --quiet; then
-            git commit -m "chore: package Cashfree Appwrite function"
-            git pull --rebase origin main
-            git push
-          fi
       - name: Publish site files to gh-pages branch
         if: github.event_name != 'pull_request'
         uses: peaceiris/actions-gh-pages@v4
