@@ -1,0 +1,63 @@
+import { useMemo, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ArrowRight, ArrowUpRight, Check, ChevronDown, Heart, Menu, Play, Search, Sparkles, X, SlidersHorizontal, Flower2, CalendarDays, MapPin, Music2, Instagram } from 'lucide-react'
+
+const templates = [
+  { id:1, name:'The Royal Jashn', style:'Royal', price:1499, tag:'Bestseller', tone:'Crimson · Gold', image:'https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=900&q=85', description:'A regal celebration wrapped in old-world palace charm, ornate borders and warm gold details.' },
+  { id:2, name:'Garden of Noor', style:'Floral', price:1299, tag:'New', tone:'Sage · Blush', image:'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=85', description:'Soft botanicals, airy layouts and a romantic garden-party feeling.' },
+  { id:3, name:'Sunehri Shaam', style:'Minimal', price:999, tag:'', tone:'Ivory · Champagne', image:'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=900&q=85', description:'Quiet luxury with editorial typography, delicate linework and a timeless palette.' },
+  { id:4, name:'Rang Barse', style:'Vibrant', price:1199, tag:'Popular', tone:'Fuchsia · Saffron', image:'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=900&q=85', description:'A joyful riot of colour inspired by Indian festivities, folk art and celebration.' },
+  { id:5, name:'Mogra & Mehendi', style:'Floral', price:1399, tag:'', tone:'Mehendi · Ivory', image:'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=900&q=85', description:'Fresh mogra-inspired details and botanical flourishes for a soulful celebration.' },
+  { id:6, name:'The Jaipur Edit', style:'Royal', price:1599, tag:'Premium', tone:'Terracotta · Rose', image:'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=900&q=85', description:'A contemporary ode to Rajasthan with architectural motifs and sunset hues.' },
+]
+const categories = ['All designs','Royal','Floral','Minimal','Vibrant']
+function App(){
+  const [active,setActive] = useState('All designs')
+  const [query,setQuery] = useState('')
+  const [preview,setPreview] = useState(null)
+  const [menu,setMenu] = useState(false)
+  const [saved,setSaved] = useState([])
+  const filtered = useMemo(()=>templates.filter(t=>(active==='All designs'||t.style===active)&&t.name.toLowerCase().includes(query.toLowerCase())),[active,query])
+  const toggleSave = id => setSaved(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id])
+  return <div className="site-shell">
+    <div className="announcement"><Sparkles size={13}/> A little more magic for your big day <span>—</span> Discover your wedding website <ArrowRight size={13}/></div>
+    <header className="nav-wrap"><a className="brand" href="#"><span className="brand-mark">श्री</span><span>shaadi<span className="brand-italic">sutra</span><small>THE WEDDING WEBSITE STUDIO</small></span></a>
+      <nav className={menu?'nav-links open':'nav-links'}><a href="#templates" onClick={()=>setMenu(false)}>Explore designs</a><a href="#how" onClick={()=>setMenu(false)}>How it works</a><a href="#story" onClick={()=>setMenu(false)}>Our story</a></nav>
+      <div className="nav-actions"><a className="text-link" href="#templates">Find your invite</a><button className="nav-cta" onClick={()=>document.getElementById('templates').scrollIntoView({behavior:'smooth'})}>Create your site <ArrowUpRight size={15}/></button></div>
+      <button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label="Toggle menu">{menu?<X/>:<Menu/>}</button>
+    </header>
+    <main>
+      <section className="hero">
+        <div className="hero-copy"><div className="eyebrow"><span className="eyebrow-line"/> MADE FOR YOUR FOREVER <span className="eyebrow-line"/></div>
+          <h1>Your story deserves<br/>a <em>beautiful</em> beginning.</h1>
+          <p className="hero-lede">Wedding websites as unforgettable as the celebrations they invite you to. Rooted in tradition, made for today.</p>
+          <div className="hero-buttons"><a className="button-primary" href="#templates">Explore the collection <ArrowRight size={16}/></a><a className="button-play" href="#how"><span><Play size={13} fill="currentColor"/></span> See how it works</a></div>
+          <div className="hero-proof"><div className="avatar-stack"><i>R</i><i>A</i><i>M</i><i>+</i></div><span><b>Made for moments that matter</b><small>Thoughtful details. Personal stories.</small></span></div>
+        </div>
+        <div className="hero-art"><div className="hero-image-main"><img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=1200&q=90" alt="Indian wedding celebration with floral decor"/><div className="image-wash"/></div>
+          <div className="hero-invite"><div className="invite-ornament">❧</div><span className="invite-kicker">WITH THE BLESSINGS OF OUR FAMILIES</span><div className="invite-names">Aarav <i>&</i><br/>Meera</div><div className="invite-rule"><span>✦</span></div><p>INVITE YOU TO CELEBRATE<br/>THEIR WEDDING</p><b>12 · 12 · 2026</b><div className="invite-bottom">JAIPUR · RAJASTHAN</div></div>
+          <div className="hero-stamp"><span>EST.</span><b>2026</b><small>THE<br/>FOREVER<br/>BEGINS</small></div><div className="hero-flower">✿</div>
+        </div>
+        <div className="hero-bottom-note"><span>01 / 04</span><span>DESIGNED WITH LOVE IN INDIA</span><span>SCROLL TO EXPLORE ↓</span></div>
+      </section>
+      <section className="marquee"><div>YOUR PEOPLE <i>✳</i> YOUR RITUALS <i>✳</i> YOUR KIND OF MAGIC <i>✳</i> YOUR PEOPLE <i>✳</i> YOUR RITUALS <i>✳</i> YOUR KIND OF MAGIC <i>✳</i></div></section>
+      <section className="collection section-pad" id="templates">
+        <div className="section-heading"><div><div className="eyebrow left"><span className="eyebrow-line"/> THE COLLECTION</div><h2>Find the one that feels<br/><em>like you.</em></h2></div><p>Every love story has its own rhythm. Find a design that captures yours — then make it yours, down to the last little detail.</p></div>
+        <div className="collection-tools"><div className="filters">{categories.map(c=><button key={c} className={active===c?'filter active':'filter'} onClick={()=>setActive(c)}>{c}</button>)}</div><label className="search-box"><Search size={16}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find your kind of magic"/></label></div>
+        <div className="template-grid">{filtered.map((t,i)=><motion.article className="template-card" key={t.id} layout initial={{opacity:0,y:18}} animate={{opacity:1,y:0}} transition={{delay:i*.05}}>
+          <div className="template-image" onClick={()=>setPreview(t)} role="button" tabIndex={0}><img src={t.image} alt={t.name}/><div className="template-overlay"><span>QUICK PREVIEW <ArrowUpRight size={14}/></span></div>{t.tag&&<span className="template-tag">{t.tag}</span>}<button className={saved.includes(t.id)?'save-button saved':'save-button'} onClick={e=>{e.stopPropagation();toggleSave(t.id)}} aria-label="Save template"><Heart size={17} fill={saved.includes(t.id)?'currentColor':'none'}/></button></div>
+          <div className="template-meta"><div><span className="template-tone">{t.tone}</span><h3>{t.name}</h3></div><b>₹{t.price.toLocaleString('en-IN')}</b></div><div className="template-foot"><span>{t.style} aesthetic</span><button onClick={()=>setPreview(t)}>View design <ArrowUpRight size={14}/></button></div>
+        </motion.article>)}</div>
+        {filtered.length===0&&<div className="empty-state">No designs found. Try another search or category.</div>}
+        <div className="collection-bottom"><span>SHOWING {filtered.length} OF {templates.length} DESIGNS</span><button onClick={()=>{setActive('All designs');setQuery('')}}>View all designs <ArrowRight size={15}/></button></div>
+      </section>
+      <section className="manifesto" id="story"><div className="manifesto-image"><img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?auto=format&fit=crop&w=1200&q=85" alt="Beautiful Indian wedding floral details"/><span className="vertical-note">A CELEBRATION OF YOU · EST. WITH LOVE</span></div><div className="manifesto-copy"><div className="eyebrow left"><span className="eyebrow-line"/> MORE THAN AN INVITATION</div><h2>All your little<br/>moments. One<br/><em>lovely place.</em></h2><p>From the first save-the-date to the last dance, bring every part of your celebration together in one beautiful corner of the internet.</p><div className="manifesto-points"><div><CalendarDays/><span><b>Every event, together</b><small>Mehendi, sangeet, pheras & all the in-betweens.</small></span></div><div><MapPin/><span><b>Every detail, in place</b><small>Venue maps, timings, dress codes and more.</small></span></div><div><Heart/><span><b>Every guest, in the loop</b><small>One link to share all the wedding-day magic.</small></span></div></div><a className="underlined-link" href="#how">Discover the experience <ArrowRight size={16}/></a></div></section>
+      <section className="how section-pad" id="how"><div className="eyebrow"><span className="eyebrow-line"/> THE GOOD PART IS SIMPLE <span className="eyebrow-line"/></div><h2>From “I do” to <em>it's done.</em></h2><div className="steps"><div className="step"><span>01</span><div className="step-icon"><SlidersHorizontal/></div><h3>Choose your vibe</h3><p>Browse thoughtfully designed templates until one feels like your story.</p></div><div className="step"><span>02</span><div className="step-icon"><Flower2/></div><h3>Make it yours</h3><p>Add your names, photos, dates, venues and all the details guests need.</p></div><div className="step"><span>03</span><div className="step-icon"><Music2/></div><h3>Share the joy</h3><p>Publish your wedding website and send one lovely link to everyone.</p></div></div><a className="button-primary" href="#templates">Find your wedding website <ArrowRight size={16}/></a></section>
+      <section className="quote-band"><span className="quote-flower">✳</span><p>“A little piece of the magic,<br/>before the magic even begins.”</p><span>THE SHAADISUTRA PROMISE</span></section>
+      <section className="newsletter"><div><div className="eyebrow left"><span className="eyebrow-line"/> NOTES FROM THE WEDDING STUDIO</div><h2>Love a little <em>inspiration?</em></h2><p>Ideas, details and lovely things for your celebration.</p></div><form onSubmit={e=>{e.preventDefault();alert('Thank you! You are on the list.')}}><input type="email" required placeholder="Your email address"/><button type="submit">Count me in <ArrowRight size={15}/></button></form></section>
+    </main>
+    <footer><div className="footer-top"><a className="brand footer-brand" href="#"><span className="brand-mark">श्री</span><span>shaadi<span className="brand-italic">sutra</span><small>THE WEDDING WEBSITE STUDIO</small></span></a><p>For the stories that become<br/>your favourite memories.</p><div className="social"><a href="#templates" aria-label="Instagram"><Instagram/></a><a href="#templates" aria-label="Pinterest">P</a></div></div><div className="footer-bottom"><span>© 2026 SHAADISUTRA STUDIO</span><span>MADE WITH ♡ IN INDIA</span><div><a href="#story">OUR STORY</a><a href="#how">HOW IT WORKS</a><a href="mailto:hello@shaadisutra.in">SAY HELLO</a></div></div></footer>
+    <AnimatePresence>{preview&&<motion.div className="modal-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setPreview(null)}><motion.div className="preview-modal" initial={{y:25,opacity:0}} animate={{y:0,opacity:1}} exit={{y:25,opacity:0}} onClick={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setPreview(null)}><X/></button><img src={preview.image} alt={preview.name}/><div className="preview-info"><span className="template-tone">{preview.tone} · {preview.style} EDITION</span><h2>{preview.name}</h2><p>{preview.description}</p><div className="preview-price"><b>₹{preview.price.toLocaleString('en-IN')}</b><span>One-time template price</span></div><button className="button-primary" onClick={()=>alert('Personalization and checkout are coming in the next build.')}>Personalize this design <ArrowRight size={16}/></button><small><Check size={13}/> Mobile-friendly · Easy to personalize</small></div></motion.div></motion.div>}</AnimatePresence>
+  </div>
+}
+export default App
