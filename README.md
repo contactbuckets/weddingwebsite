@@ -37,7 +37,7 @@ This repository currently contains a frontend MVP. Before accepting real custome
 1. **Authentication** — Appwrite email/password authentication is now wired into the sign-in modal.
 2. **Database** — the dedicated Appwrite database and core tables are provisioned; wedding draft save is wired to owner-scoped rows.
 3. **Media storage** — the Appwrite wedding-media bucket is provisioned with per-file security, authenticated uploads, image validation and metadata stripping.
-4. **Payments** — Razorpay order creation and server-side signature verification. Never trust a browser-only payment-success state.
+4. **Payments** — Cashfree checkout is wired through an Appwrite Function. It creates server-priced orders, verifies payment status server-side, and supports signed Cashfree webhooks. Cashfree credentials, the public site URL and webhook URL still need to be configured before a sandbox payment can run.
 5. **Publishing** — create public, unique wedding URLs and serve the right published project.
 6. **Guest tools** — RSVP submissions, event-specific guest access, map links and share metadata.
 7. **Operations** — admin template management, order support, email notifications, backups, privacy policy and terms.
