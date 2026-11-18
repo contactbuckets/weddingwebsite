@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import './viren-yukti.css'
 
@@ -14,12 +14,61 @@ const petals = Array.from({length:22},(_,i)=>({left:(i*37)%100,delay:(i%7)*1.3,d
 const prettyDate = value => value ? new Date(value+'T12:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'}) : 'The wedding day'
 const Reveal = ({children,className='',delay=0}) => <motion.div className={className} initial={{opacity:0,y:42}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.18}} transition={{duration:.9,ease:[.22,.61,.36,1],delay}}>{children}</motion.div>
 export default function VirenYuktiTemplate({data={}}){
+  const [entryStage,setEntryStage]=useState('gate')
+  const scratchCanvas=useRef(null)
+  const scratchMoves=useRef(0)
   const {scrollYProgress}=useScroll()
+  const openGate=()=>{setEntryStage('opening');window.setTimeout(()=>setEntryStage('scratch'),1350)}
+  useEffect(()=>{
+    if(entryStage!=='scratch'||!scratchCanvas.current)return
+    const canvas=scratchCanvas.current
+    const rect=canvas.getBoundingClientRect()
+    const ratio=window.devicePixelRatio||1
+    canvas.width=Math.round(rect.width*ratio);canvas.height=Math.round(rect.height*ratio)
+    const ctx=canvas.getContext('2d');ctx.scale(ratio,ratio)
+    const gradient=ctx.createLinearGradient(0,0,rect.width,rect.height)
+    gradient.addColorStop(0,'#f8e7a7');gradient.addColorStop(.48,'#c28a32');gradient.addColorStop(1,'#f5d982')
+    ctx.fillStyle=gradient;ctx.fillRect(0,0,rect.width,rect.height)
+    ctx.strokeStyle='rgba(255,248,211,.72)';ctx.lineWidth=2;ctx.strokeRect(10,10,rect.width-20,rect.height-20)
+    ctx.fillStyle='#70421f';ctx.textAlign='center';ctx.font='20px Georgia';ctx.fillText('✦  शुभ विवाह  ✦',rect.width/2,rect.height/2-8)
+    ctx.font='10px Georgia';ctx.fillText('SCRATCH HERE TO REVEAL',rect.width/2,rect.height/2+20)
+  },[entryStage])
+  const scratchAt=e=>{
+    if(entryStage!=='scratch'||!scratchCanvas.current)return
+    const canvas=scratchCanvas.current;const rect=canvas.getBoundingClientRect()
+    const ctx=canvas.getContext('2d');const ratio=window.devicePixelRatio||1
+    ctx.globalCompositeOperation='destination-out';ctx.beginPath();ctx.arc(e.clientX-rect.left,e.clientY-rect.top,25,0,Math.PI*2);ctx.fill()
+    scratchMoves.current+=1
+    if(scratchMoves.current>26){ctx.clearRect(0,0,canvas.width/ratio,canvas.height/ratio);setEntryStage('revealed')}
+  }
   const heroY=useTransform(scrollYProgress,[0,.35],[0,110])
   const events=Array.isArray(data.events)&&data.events.length?data.events:[{name:'Mehendi',date:'2027-02-12',time:'16:00',venue:'Garden Courtyard'},{name:'Sangeet',date:'2027-02-13',time:'19:00',venue:'The Celebration Hall'},{name:'Shubh Vivah',date:data.date||'2027-02-14',time:'17:00',venue:data.venue||'The Wedding Venue'}]
   const couple=data.bride&&data.groom?[data.bride,data.groom]:['Viren','Yukti']
   const families=data.families||[['Groom’s Family','Mr. & Mrs. Sharma','Shri. R. Sharma'],['Bride’s Party','Mr. & Mrs. Mehta','Smt. N. Mehta']]
   return <div className="vy-site">
+    {entryStage!=='site' ? <div className="vy-entry-screen">
+      <div className="vy-entry-sky"><span>✦</span><span>☼</span><span>✦</span></div>
+      <div className="vy-entry-flowerline">✿ ❀ ✿ ❀ ✿ ❀ ✿ ❀ ✿</div>
+      {entryStage==='gate'||entryStage==='opening' ? <div className="vy-gate-scene">
+        <div className="vy-gate-arch"><span className="vy-gate-mantra">॥ श्री गणेशाय नमः ॥</span><span className="vy-gate-lotus">❀</span>
+          <motion.div className="vy-gate-door vy-gate-left" animate={{x:entryStage==='opening'?'-103%':'0%'}} transition={{duration:1.25,ease:[.7,0,.2,1]}}><span>ॐ</span><b>✺</b><i>❀</i></motion.div>
+          <motion.div className="vy-gate-door vy-gate-right" animate={{x:entryStage==='opening'?'103%':'0%'}} transition={{duration:1.25,ease:[.7,0,.2,1]}}><span>शुभ</span><b>✺</b><i>❀</i></motion.div>
+          <div className="vy-gate-center"><span>✦</span><b>{couple[0]} & {couple[1]}</b><small>ARE GETTING MARRIED</small></div>
+        </div>
+        <div className="vy-gate-copy"><small>A CELEBRATION OF LOVE & TRADITION</small><h2>Our doors are open<br/>to your blessings</h2><p>With folded hands and joyful hearts, we invite you.</p>
+          <button onClick={openGate} disabled={entryStage==='opening'}>View Invitation <span>✧</span></button>
+        </div>
+      </div> : <div className="vy-scratch-scene">
+        <div className="vy-scratch-heading"><small>A LITTLE SURPRISE FOR YOU</small><h2>Shagun of Love</h2><p>Gently scratch the golden surface to reveal our invitation</p></div>
+        <div className="vy-scratch-card">
+          <div className="vy-scratch-under"><span>॥ श्री गणेशाय नमः ॥</span><b>{couple[0]} <i>&</i> {couple[1]}</b><strong>{prettyDate(data.date)}</strong><small>REQUEST THE HONOUR OF YOUR PRESENCE</small><em>❀ ✦ ❀</em></div>
+          {entryStage==='scratch'&&<canvas ref={scratchCanvas} className="vy-scratch-layer" onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);scratchAt(e)}} onPointerMove={e=>{if(e.buttons===1)scratchAt(e)}} aria-label="Scratch to reveal the wedding invitation"/>}
+        </div>
+        {entryStage==='scratch'?<button className="vy-skip-scratch" onClick={()=>setEntryStage('revealed')}>Skip scratch · Reveal invitation</button>:<button className="vy-enter-button" onClick={()=>setEntryStage('site')}>Enter the celebration <span>✧</span></button>}
+      </div>}
+      <div className="vy-entry-foot">MADE WITH LOVE · BLESSED WITH TRADITION</div>
+    </div> : <>
+
     <div className="vy-progress"><motion.span style={{scaleX:scrollYProgress}}/></div>
     <div className="vy-petals" aria-hidden="true">{petals.map((p,i)=><motion.i key={i} style={{left:p.left+'%',width:p.size,height:p.size,rotate:p.rotate}} animate={{y:['-8vh','110vh'],x:[0,(i%2?1:-1)*55,0],rotate:[p.rotate,p.rotate+220]}} transition={{duration:p.duration,delay:p.delay,repeat:Infinity,ease:'linear'}}/>)}</div>
     <section className="vy-hero">
@@ -38,5 +87,6 @@ export default function VirenYuktiTemplate({data={}}){
     <section className="vy-gallery"><Reveal><span className="vy-eyebrow">LITTLE MOMENTS, FOREVER</span><h2>Rituals & Portraits</h2></Reveal><div className="vy-gallery-grid">{(data.gallery?.length?data.gallery:photos).slice(0,6).map((src,i)=><Reveal key={i} delay={i*.06} className="vy-gallery-photo"><img src={src} alt={'Wedding portrait '+(i+1)}/><span>✿</span></Reveal>)}</div></section>
     <section className="vy-venues"><Reveal><span className="vy-eyebrow">WHERE WE BECOME FOREVER</span><h2>Venues</h2></Reveal><div className="vy-venue-grid"><Reveal className="vy-venue-card"><span>THE CELEBRATION</span><h3>{events[0]?.venue||data.venue||'Our Venue'}</h3><p>{data.city||'With love, in a place close to our hearts'}</p></Reveal><Reveal className="vy-venue-card" delay={.15}><span>THE WEDDING</span><h3>{data.venue||'Wedding Venue'}</h3><p>{data.city||'We cannot wait to celebrate with you'}</p></Reveal></div></section>
     <footer className="vy-footer"><Reveal><span className="vy-eyebrow">WITH LOVE & BLESSINGS</span><h2>{couple.join(' & ')}</h2><p>We cannot wait to celebrate with you.</p><b>{data.hashtag||'#ForeverBegins'}</b><span className="vy-footer-flourish">❀ ❧ ✦ ❧ ❀</span></Reveal></footer>
+    </>}
   </div>
 }
