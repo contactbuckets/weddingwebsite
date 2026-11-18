@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { appwriteConfigured, getCurrentUser, loginAccount, logoutAccount, registerAccount, saveWeddingProject } from './lib/appwrite'
+import { appwriteConfigured, getCurrentUser, loadWeddingProject, loginAccount, logoutAccount, registerAccount, saveWeddingProject } from './lib/appwrite'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, Clock3, Copy, ExternalLink, Eye, Flower2, Heart, Instagram, MapPin, Menu, Music2, Play, Search, Share2, ShieldCheck, SlidersHorizontal, Sparkles, X, CalendarDays, Image as ImageIcon, LayoutDashboard, Plus, Trash2, Upload, WandSparkles } from 'lucide-react'
 
