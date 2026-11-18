@@ -34,6 +34,11 @@ jobs:
           VITE_CASHFREE_MODE: sandbox
           GITHUB_PAGES: 'true'
         run: npm run build
+      - name: Add static admin route for GitHub Pages
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p dist/admin
+          cp dist/index.html dist/admin/index.html
       - name: Package Appwrite function and site source
         if: github.event_name != 'pull_request'
         run: |
