@@ -61,7 +61,7 @@ export async function saveWeddingProject({ user, wedding, template }) {
 
 export async function uploadWeddingImage(file, user) {
   if (!user?.$id) throw new Error('Please sign in before uploading photos.')
-  if (!file || !/^image\\/(jpeg|png|webp|avif)$/.test(file.type)) throw new Error('Choose a JPG, PNG, WebP or AVIF image.')
+  if (!file || !/^image\/(jpeg|png|webp|avif)$/.test(file.type)) throw new Error('Choose a JPG, PNG, WebP or AVIF image.')
   if (file.size > 10 * 1024 * 1024) throw new Error('Each image must be 10 MB or smaller.')
   const uploaded = await storage.createFile({
     bucketId: 'wedding-media',
